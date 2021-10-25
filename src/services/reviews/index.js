@@ -5,6 +5,7 @@ import uniqid from "uniqid";
 import { validationResult } from "express-validator";
 import { reviewValidation } from "./validation.js";
 
+
 const reviewsRouter = express.Router();
 
 reviewsRouter.get("/", async (req, res, next) => {
@@ -35,23 +36,6 @@ reviewsRouter.get("/:id", async (req, res, next) => {
   }
 });
 
-/* reviewsRouter.get("/:productId", async (req, res, next) => {
-  try {
-    const reviews = await getReviewsJSON();
-    const reviewsByProductId = reviews.filter(
-      (review) => review.productId === req.params.productId
-    );
-    if (reviewsByProductId.length) {
-      res.send(reviewsByProductId);
-    } else {
-      next(
-        createHttpError(404, `No reviews found for ${req.params.productId}`)
-      );
-    }
-  } catch (error) {
-    next(error);
-  }
-}); */
 
 reviewsRouter.put("/:id", reviewValidation, async (req, res, next) => {
   try {
@@ -115,3 +99,5 @@ reviewsRouter.post("/:productId", reviewValidation, async (req, res, next) => {
 });
 
 export default reviewsRouter;
+
+
