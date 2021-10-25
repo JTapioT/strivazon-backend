@@ -102,7 +102,7 @@ reviewsRouter.post("/:productId", reviewValidation, async (req, res, next) => {
     const errorsList = validationResult(req);
     if (errorsList.isEmpty()) {
       const reviews = await getReviewsJSON();
-      const newReview = { _id: uniqid(), ...req.body, createdAt: new Date() };
+      const newReview = { _id: uniqid(), ...req.body, createdAt: new Date(), updatedAt: new Date() };
       reviews.push(newReview);
       writeReviewsJSON(reviews);
       res.status(201).send({ _id: newReview._id });
