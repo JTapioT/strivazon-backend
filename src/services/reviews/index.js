@@ -24,6 +24,16 @@ reviewsRouter.get("/", async (req, res, next) => {
 reviewsRouter.get("/:productId", async (req, res, next) => {
   try {
     const reviews = await getReviewsJSON();
+    const reviewsByProductId = reviews.filter(
+      (review) => review.productId === req.params.productId
+    );
+    if (reviewsByProductId.length) {
+      res.send(reviewsByProductId);
+    } else {
+      next(
+        createHttpError(404, `No reviews found for ${req.params.productId}`)
+      );
+    }
   } catch (error) {
     next(error);
   }
@@ -55,7 +65,23 @@ reviewsRouter.put("/:id", reviewValidation, async (req, res, next) => {
   }
 });
 
-reviewsRouter.delete("/id", (req, res, next) => {});
+reviewsRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const reviews = await getReviewsJSON();
+    const index = reviews.findIndex((review) => review._id === req.params.id);
+    if (index === -1) {
+      next(createHttpError(404, "The review is not found!"));
+    } else {
+      const remainingReviews = reviews.filter(
+        (review) => review._id !== req.params.id
+      );
+      writeReviewsJSON(remainingReviews);
+      res.status(204).send();
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 reviewsRouter.post("/:productId", reviewValidation, async (req, res, next) => {
   try {
