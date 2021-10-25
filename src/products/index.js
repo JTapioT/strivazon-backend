@@ -2,8 +2,14 @@ import express from "express";
 import uniqid from "uniqid";
 import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
-import { getReviewsJSON, getProductsJSON, writeProductsJSON } from "../lib/fs-tools.js";
+import {
+  getReviewsJSON,
+  getProductsJSON,
+  writeProductsJSON,
+} from "../lib/fs-tools.js";
 import { productValidationMiddlewares } from "./validation.js";
+import { parseFile, uploadFile } from "../upload/index.js";
+
 const productsRouter = express.Router();
 
 productsRouter.get("/", async (req, res, next) => {
@@ -65,7 +71,7 @@ productsRouter.post(
           _id: uniqid(),
           ...req.body,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
         products.push(newProduct);
         await writeProductsJSON(products);
@@ -117,4 +123,33 @@ productsRouter.delete("/:productId", async (req, res, next) => {
     next(error);
   }
 });
+
+productsRouter.put(
+  "/:productId/upload",
+  parseFile.single("upload"),
+  uploadFile,
+  async (req, res, next) => {
+    try {
+      const products = await getProductsJSON();
+      const index = products.findIndex(
+        (product) => product._id === req.params.productId
+      );
+
+      const productToModify = products[index];
+      const updatedFields = {
+        imageUrl: req.file,
+        updatedAt: new Date(),
+      };
+
+      const updatedProduct = { ...productToModify, ...updatedFields };
+      products[index] = updatedProduct;
+
+      products.push(updatedProduct);
+      await writeProductsJSON(products);
+      res.status(201).send({ _id: products[index]._id });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 export default productsRouter;
