@@ -21,7 +21,21 @@ reviewsRouter.get("/", async (req, res, next) => {
   }
 });
 
-reviewsRouter.get("/:productId", async (req, res, next) => {
+reviewsRouter.get("/:id", async (req, res, next) => {
+  try {
+    const reviews = await getReviewsJSON();
+    const index = reviews.findIndex((review) => review._id === req.params.id);
+    if (index === -1) {
+      next(createHttpError(404, `No review found ${req.params.id}`));
+    } else {
+      res.send(reviews[index]);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+/* reviewsRouter.get("/:productId", async (req, res, next) => {
   try {
     const reviews = await getReviewsJSON();
     const reviewsByProductId = reviews.filter(
@@ -37,7 +51,7 @@ reviewsRouter.get("/:productId", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+}); */
 
 reviewsRouter.put("/:id", reviewValidation, async (req, res, next) => {
   try {
