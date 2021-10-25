@@ -1,7 +1,8 @@
-import express from 'express';
+import express from "express";
 import listEndpoints from "express-list-endpoints";
 import cors from "cors";
-import { join } from 'path';
+import { join } from "path";
+import  reviewsRouter  from "../src/services/reviews/index.js";
 
 const server = express();
 
@@ -10,9 +11,8 @@ server.use(cors());
 server.use(express.json());
 
 // Endpoints
-
+server.use("/reviews", reviewsRouter);
 // Error-handling middleware
-
 
 const port = 3001;
 console.table(listEndpoints(server));
@@ -22,9 +22,3 @@ server.listen(port, () => {
 });
 
 export default server;
-
-
-
-
-
-

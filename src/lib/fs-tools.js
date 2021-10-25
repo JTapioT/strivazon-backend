@@ -1,10 +1,9 @@
-import fs, { readJSON } from 'fs-extra';
+import fs from "fs-extra";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
-
 // Fs-extra
-const { readJSON, writeJSON, writeFile } = fs; 
+const { readJSON, writeJSON, writeFile } = fs;
 
 // Folder path for JSON files
 const dataFolderPath = join(dirname(fileURLToPath(import.meta.url)), "../data");
@@ -27,7 +26,6 @@ export function getReviewsJSON() {
 export function writeReviewsJSON(content) {
   return writeJSON(reviewsJSONPath, content);
 }
-
 
 // Save product image
 // 1. I guess before this we need public folder set-up for this. Then we can have a function for this
