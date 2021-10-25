@@ -43,6 +43,23 @@ productsRouter.get("/:productId", async (req, res, next) => {
 
 productsRouter.get("/:productId/reviews", async (req, res, next) => {
   try {
+    const products = await getProductsJSON();
+    if (!products.length) {
+      next(createHttpError(404, "No products found."));
+    }
+    console.log(products);
+    if (req.query.category) {
+      const filteredProducts = products.filter((product) =>
+        product.toLowerCase().includes(req.query.category).toLowerCase()
+      );
+      res.send(filteredProducts);
+    } else {
+      res.send(products);
+    }
+  } catch (error) {
+    next(error);
+  }
+  /* try {
     const reviews = await getReviewsJSON();
     const reviewsByProductId = reviews.filter(
       (review) => review.productId === req.params.productId
@@ -56,7 +73,7 @@ productsRouter.get("/:productId/reviews", async (req, res, next) => {
     }
   } catch (error) {
     next(error);
-  }
+  } */
 });
 
 productsRouter.post(
