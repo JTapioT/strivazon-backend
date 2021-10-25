@@ -2,7 +2,7 @@ import express from "express";
 import uniqid from "uniqid";
 import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
-import { getProductsJSON, writeProductsJSON } from "../lib/fs-tools.js";
+import { getReviewsJSON, getProductsJSON, writeProductsJSON } from "../lib/fs-tools.js";
 import { productValidationMiddlewares } from "./validation.js";
 const productsRouter = express.Router();
 
@@ -35,6 +35,24 @@ productsRouter.get("/:productId", async (req, res, next) => {
   }
 });
 
+productsRouter.get("/:productId/reviews", async (req, res, next) => {
+  try {
+    const reviews = await getReviewsJSON();
+    const reviewsByProductId = reviews.filter(
+      (review) => review.productId === req.params.productId
+    );
+    if (reviewsByProductId.length) {
+      res.send(reviewsByProductId);
+    } else {
+      next(
+        createHttpError(404, `No reviews found for ${req.params.productId}`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 productsRouter.post(
   "/",
   productValidationMiddlewares,
@@ -47,6 +65,7 @@ productsRouter.post(
           _id: uniqid(),
           ...req.body,
           createdAt: new Date(),
+          updatedAt: new Date()
         };
         products.push(newProduct);
         await writeProductsJSON(products);
