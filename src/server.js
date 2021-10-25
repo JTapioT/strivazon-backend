@@ -2,7 +2,12 @@ import express from "express";
 import listEndpoints from "express-list-endpoints";
 import cors from "cors";
 import { join } from "path";
-import  reviewsRouter  from "../src/services/reviews/index.js";
+import reviewsRouter from "../src/services/reviews/index.js";
+import {
+  badRequestHandler,
+  notFoundHandler,
+  genericErrorHandler,
+} from "./errorHandlers.js";
 
 const server = express();
 
@@ -13,6 +18,9 @@ server.use(express.json());
 // Endpoints
 server.use("/reviews", reviewsRouter);
 // Error-handling middleware
+server.use(badRequestHandler);
+server.use(notFoundHandler);
+server.use(genericErrorHandler);
 
 const port = 3001;
 console.table(listEndpoints(server));
