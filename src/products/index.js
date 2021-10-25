@@ -158,7 +158,7 @@ productsRouter.put(
         imageUrl: req.file,
         updatedAt: new Date(),
       };
-
+      
       const updatedProduct = { ...productToModify, ...updatedFields };
       products[index] = updatedProduct;
 
